@@ -1,0 +1,46 @@
+{
+  "name": "lb4-log-extension-example",
+  "version": "1.0.0",
+  "description": "An example extension project for LoopBack Next",
+  "main": "index.js",
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "build": "npm run build:lib && npm run build:lib6",
+    "build:lib": "tsc --target es2017 --outDir dist",
+    "build:lib6": "tsc --target es2015 --outDir dist6",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist dist6",
+    "lint": "tslint -c tslint.full.json --project tsconfig.json --type-check",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "pretest": "npm run clean && npm run build",
+    "test": "mocha",
+    "posttest": "npm run lint",
+    "test:dev": "mocha && npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strongloop/lb4-log-extension-example.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/strongloop/lb4-log-extension-example/issues"
+  },
+  "homepage": "https://github.com/strongloop/lb4-log-extension-example#readme",
+  "files": ["README.md", "index.js", "index.d.ts", "dist", "dist6"],
+  "dependencies": {
+    "@loopback/context": "^4.0.0-alpha.14",
+    "@loopback/core": "^4.0.0-alpha.16",
+    "@loopback/rest": "^4.0.0-alpha.3"
+  },
+  "devDependencies": {
+    "@loopback/testlab": "^4.0.0-alpha.9",
+    "@types/mocha": "^2.2.43",
+    "mocha": "^3.5.3",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.2"
+  }
+}
