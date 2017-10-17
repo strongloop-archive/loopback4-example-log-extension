@@ -6,7 +6,11 @@
     {
       "taskName": "Watch and compile TypeScript",
       "command": "npm",
-      "args": ["--silent", "run", "build:watch"],
+      "args": [
+        "--silent",
+        "run",
+        "build:watch"
+      ],
       "type": "process",
       "isBackground": true,
       "problemMatcher": "$tsc-watch",
@@ -24,7 +28,11 @@
     {
       "taskName": "Test and lint",
       "command": "npm",
-      "args": ["--silent", "run", "test:dev"],
+      "args": [
+        "--silent",
+        "run",
+        "test:dev"
+      ],
       "type": "process",
       "group": {
         "kind": "test",

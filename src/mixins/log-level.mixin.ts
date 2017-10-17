@@ -1,5 +1,5 @@
 // Copyright IBM Corp. 2017. All Rights Reserved.
-// Node module: loopback-next-extension-starter
+// Node module: loopback4-example-log-extension
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
@@ -21,6 +21,7 @@ import {LogBindings} from '../keys';
 export function LogLevelMixin<T extends Constructor<any>>(superClass: T) {
   return class extends superClass {
     // A mixin class has to take in a type any[] argument!
+    // tslint:disable-next-line:no-any
     constructor(...args: any[]) {
       super(...args);
       if (!this.options) this.options = {};

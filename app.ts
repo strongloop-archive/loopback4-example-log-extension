@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2017. All Rights Reserved.
+// Node module: loopback4-example-log-extension
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 import {
   get,
   param,
@@ -65,6 +70,7 @@ class LogSequence implements SequenceHandler {
       result = await this.invoke(route, args);
       this.send(res, result);
     } catch (err) {
+      result = err;
       this.reject(res, req, err);
     }
 

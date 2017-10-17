@@ -3,4 +3,11 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-export * from './dist';
+import {Provider} from '@loopback/context';
+import {LogLevel} from '../keys';
+
+export class LogLevelProvider implements Provider<number> {
+  value(): number {
+    return LogLevel.WARN;
+  }
+}

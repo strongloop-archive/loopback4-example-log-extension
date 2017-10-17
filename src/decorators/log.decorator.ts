@@ -1,19 +1,11 @@
-// Copyright IBM Corp. 2013,2017. All Rights Reserved.
-// Node module: loopback-next-extension-starter
+// Copyright IBM Corp. 2017. All Rights Reserved.
+// Node module: loopback4-example-log-extension
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
 import {Reflector, Constructor} from '@loopback/context';
 import {LogBindings, LogLevel} from '../keys';
-
-/**
- * Log Operation metadata stored via Reflection API
- */
-export interface LogMetadata {
-  level: number;
-  args: any[];
-  startTime: [number, number];
-}
+import {LogMetadata} from '../types';
 
 /**
  * Mark a controller method as requiring logging (input, output & timing)
@@ -25,12 +17,16 @@ export interface LogMetadata {
 export function log(level?: number) {
   return function(
     target: Object,
-    propertyKey: string,
+    methodName: string,
     descriptor: PropertyDescriptor,
   ) {
     return {
-      value: function(...args: any[]) {
+      value: function() {
+        // If a default log level isn't specified, we default to warn
         if (!level) level = LogLevel.WARN;
+
+        // Take arguments array and change to array
+        const args = Array.prototype.slice.call(arguments);
 
         const metadata: LogMetadata = {
           level: level,
@@ -38,32 +34,34 @@ export function log(level?: number) {
           startTime: process.hrtime(),
         };
 
+        // Here we store the metadata so it can be retrieved by the log action
         Reflector.defineMetadata(
           LogBindings.METADATA,
           metadata,
           target,
-          propertyKey,
+          methodName,
         );
 
-        return descriptor.value.apply(this, args);
+        // tslint:disable-next-line
+        return descriptor.value.apply(this, arguments);
       },
     };
   };
 }
 
 /**
- * Fetch LogOpMetadata stored by `@log` decorator.
+ * Fetch LogMetadata stored by `@log` decorator.
  *
  * @param controllerClass Target controller
  * @param methodName Target method
  */
-export function getLogOpMetadata(
-  controller: Constructor<{}>,
-  method: string,
+export function getLogMetadata(
+  controllerClass: Constructor<{}>,
+  methodName: string,
 ): LogMetadata {
   return Reflector.getMetadata(
     LogBindings.METADATA,
-    controller.prototype,
-    method,
+    controllerClass.prototype,
+    methodName,
   );
 }
