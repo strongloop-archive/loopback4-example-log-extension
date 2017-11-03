@@ -8,7 +8,7 @@
  */
 export namespace EXAMPLE_LOG_BINDINGS {
   export const METADATA = 'example.log.metadata';
-  export const LOG_LEVEL = 'example.log.level';
+  export const APP_LEVEL = 'example.log.level';
   export const TIMER = 'example.log.timer';
   export const LOG_ACTION = 'example.log.action';
 }

@@ -10,13 +10,13 @@ import {getLogMetadata} from '../decorators/log.decorator';
 import {EXAMPLE_LOG_BINDINGS, LOG_LEVEL} from '../keys';
 import {LogFn, Time, TimerFn} from '../types';
 
-export class LogProvider implements Provider<LogFn> {
+export class LogActionProvider implements Provider<LogFn> {
   constructor(
     @inject(CoreBindings.CONTROLLER_CLASS)
     private readonly controllerClass: Constructor<{}>,
     @inject(CoreBindings.CONTROLLER_METHOD_NAME)
     private readonly methodName: string,
-    @inject(EXAMPLE_LOG_BINDINGS.LOG_LEVEL) private readonly logLevel: number,
+    @inject(EXAMPLE_LOG_BINDINGS.APP_LEVEL) private readonly logLevel: number,
     @inject(EXAMPLE_LOG_BINDINGS.TIMER) public timer: TimerFn,
   ) {}
 

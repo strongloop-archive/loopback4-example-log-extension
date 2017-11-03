@@ -5,12 +5,12 @@
 
 import {EXAMPLE_LOG_BINDINGS} from './keys';
 import {Component, ProviderMap} from '@loopback/core';
-import {TimerProvider, LogProvider} from './';
+import {TimerProvider, LogActionProvider} from './';
 
 export class LogComponent implements Component {
   providers?: ProviderMap = {
     [EXAMPLE_LOG_BINDINGS.TIMER]: TimerProvider,
-    [EXAMPLE_LOG_BINDINGS.LOG_ACTION]: LogProvider,
+    [EXAMPLE_LOG_BINDINGS.LOG_ACTION]: LogActionProvider,
   };
 
   constructor() {}

@@ -39,7 +39,7 @@ export function LogLevelMixin<T extends Constructor<any>>(superClass: T) {
     * ```
     */
     logLevel(level: number) {
-      this.bind(EXAMPLE_LOG_BINDINGS.LOG_LEVEL).to(level);
+      this.bind(EXAMPLE_LOG_BINDINGS.APP_LEVEL).to(level);
     }
   };
 }

@@ -7,7 +7,7 @@ import {sinon} from '@loopback/testlab';
 import {ParsedRequest} from '@loopback/rest';
 import {Constructor, Reflector} from '@loopback/context';
 import {
-  LogProvider,
+  LogActionProvider,
   LogFn,
   Time,
   log,
@@ -15,7 +15,7 @@ import {
   LOG_LEVEL,
 } from '../../..';
 
-describe('LogProvider (unit)', () => {
+describe('LogActionProvider (unit)', () => {
   let spy: sinon.SinonSpy;
   let logger: LogFn;
   const req = <ParsedRequest>{url: '/test'};
@@ -63,7 +63,12 @@ describe('LogProvider (unit)', () => {
       'test',
     );
 
-    logger = new LogProvider(TestClass, 'test', LOG_LEVEL.WARN, timer).value();
+    logger = new LogActionProvider(
+      TestClass,
+      'test',
+      LOG_LEVEL.WARN,
+      timer,
+    ).value();
   }
 
   function createConsoleSpy() {

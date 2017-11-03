@@ -30,7 +30,7 @@ describe('LogLevelMixin (unit)', () => {
   class AppWithLogLevel extends LogLevelMixin(Application) {}
 
   function expectLogLevelToBeBound(myApp: Application) {
-    const logLevel = myApp.getSync(EXAMPLE_LOG_BINDINGS.LOG_LEVEL);
+    const logLevel = myApp.getSync(EXAMPLE_LOG_BINDINGS.APP_LEVEL);
     expect(logLevel).to.be.eql(LOG_LEVEL.ERROR);
   }
 });
