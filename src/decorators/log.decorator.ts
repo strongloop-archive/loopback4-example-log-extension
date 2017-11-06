@@ -15,7 +15,7 @@ import {Constructor, Reflector} from '@loopback/context';
  */
 export function log(level?: number) {
   return function(target: Object, methodName: string) {
-    if (!level) level = LOG_LEVEL.WARN;
+    if (level === undefined) level = LOG_LEVEL.WARN;
     Reflector.defineMetadata(
       EXAMPLE_LOG_BINDINGS.METADATA,
       level,

@@ -14,7 +14,7 @@ export interface LogFn {
     // tslint:disable-next-line:no-any
     result: any,
     startTime?: [number, number],
-  ): void;
+  ): Promise<void>;
 
   startTimer(): [number, number];
 }

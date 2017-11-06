@@ -5,7 +5,7 @@
 
 import {sinon} from '@loopback/testlab';
 import {ParsedRequest} from '@loopback/rest';
-import {Constructor, Reflector} from '@loopback/context';
+import {Context} from '@loopback/context';
 import {
   LogActionProvider,
   LogFn,
@@ -14,6 +14,7 @@ import {
   EXAMPLE_LOG_BINDINGS,
   LOG_LEVEL,
 } from '../../..';
+import {CoreBindings} from '@loopback/core';
 
 describe('LogActionProvider (unit)', () => {
   let spy: sinon.SinonSpy;
@@ -25,50 +26,44 @@ describe('LogActionProvider (unit)', () => {
 
   afterEach(restoreConsoleSpy);
 
-  it('logs a value without a start time', () => {
+  it('logs a value without a start time', async () => {
     const match =
       '\x1b[31m ERROR: /test :: TestClass.test() => test message \x1b[0m';
 
-    logger(req, [], 'test message');
+    await logger(req, [], 'test message');
     sinon.assert.calledWith(spy, match);
   });
 
-  it('logs a value with a start time', () => {
+  it('logs a value with a start time', async () => {
     const match =
       '\x1b[31m ERROR: 100.02ms: /test :: TestClass.test() => test message \x1b[0m';
     const startTime = logger.startTimer();
 
-    logger(req, [], 'test message', startTime);
+    await logger(req, [], 'test message', startTime);
     sinon.assert.calledWith(spy, match);
   });
 
-  it('logs a value with args present', () => {
+  it('logs a value with args present', async () => {
     const match =
       '\x1b[31m ERROR: /test :: TestClass.test(test, message) => test message \x1b[0m';
 
-    logger(req, ['test', 'message'], 'test message');
+    await logger(req, ['test', 'message'], 'test message');
     sinon.assert.calledWith(spy, match);
   });
 
-  function getLogger() {
+  async function getLogger() {
     class TestClass {
       @log(LOG_LEVEL.ERROR)
       test() {}
     }
 
-    Reflector.defineMetadata(
-      EXAMPLE_LOG_BINDINGS.METADATA,
-      LOG_LEVEL.ERROR,
-      TestClass,
-      'test',
-    );
-
-    logger = new LogActionProvider(
-      TestClass,
-      'test',
-      LOG_LEVEL.WARN,
-      timer,
-    ).value();
+    const context: Context = new Context();
+    context.bind(CoreBindings.CONTROLLER_CLASS).to(TestClass);
+    context.bind(CoreBindings.CONTROLLER_METHOD_NAME).to('test');
+    context.bind(EXAMPLE_LOG_BINDINGS.APP_LEVEL).to(LOG_LEVEL.WARN);
+    context.bind(EXAMPLE_LOG_BINDINGS.TIMER).to(timer);
+    context.bind(EXAMPLE_LOG_BINDINGS.LOG_ACTION).toProvider(LogActionProvider);
+    logger = await context.get(EXAMPLE_LOG_BINDINGS.LOG_ACTION);
   }
 
   function createConsoleSpy() {

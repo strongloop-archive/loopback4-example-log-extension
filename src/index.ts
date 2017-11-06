@@ -4,9 +4,10 @@
 // License text available at https://opensource.org/licenses/MIT
 
 export * from './decorators/log.decorator';
-export * from './providers/timer.provider';
 export * from './mixins/log-level.mixin';
-export * from './providers/log.provider';
+export * from './providers/log-action.provider';
+export * from './providers/log-level.provider';
+export * from './providers/timer.provider';
 export * from './log.component';
 export * from './types';
 export * from './keys';

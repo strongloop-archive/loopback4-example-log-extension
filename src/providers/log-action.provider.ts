@@ -3,7 +3,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {inject, Provider, Constructor} from '@loopback/context';
+import {inject, Provider, Constructor, Getter} from '@loopback/context';
 import {CoreBindings} from '@loopback/core';
 import {OperationArgs, ParsedRequest} from '@loopback/rest';
 import {getLogMetadata} from '../decorators/log.decorator';
@@ -12,30 +12,35 @@ import {LogFn, Time, TimerFn} from '../types';
 
 export class LogActionProvider implements Provider<LogFn> {
   constructor(
-    @inject(CoreBindings.CONTROLLER_CLASS)
-    private readonly controllerClass: Constructor<{}>,
-    @inject(CoreBindings.CONTROLLER_METHOD_NAME)
-    private readonly methodName: string,
+    @inject.getter(CoreBindings.CONTROLLER_CLASS)
+    private readonly getController: Getter<Constructor<{}>>,
+    @inject.getter(CoreBindings.CONTROLLER_METHOD_NAME)
+    private readonly getMethod: Getter<string>,
     @inject(EXAMPLE_LOG_BINDINGS.APP_LEVEL) private readonly logLevel: number,
     @inject(EXAMPLE_LOG_BINDINGS.TIMER) public timer: TimerFn,
   ) {}
 
-  value(): LogFn {
-    const fn = <LogFn>((
+  value() {
+    const fn = <LogFn>(async (
       req: ParsedRequest,
       args: OperationArgs,
+      // tslint:disable-next-line:no-any
       result: any,
       start?: [number, number],
     ) => {
-      const level: number = getLogMetadata(
-        this.controllerClass,
-        this.methodName,
-      );
+      const controllerClass = await this.getController();
+      const methodName: string = await this.getMethod();
 
-      if (level > this.logLevel && this.logLevel !== LOG_LEVEL.OFF) {
+      const level: number = getLogMetadata(controllerClass, methodName);
+
+      if (
+        this.logLevel !== LOG_LEVEL.OFF &&
+        level >= this.logLevel &&
+        level !== LOG_LEVEL.OFF
+      ) {
         if (!args) args = [];
-        let log = `${req.url} :: ${this.controllerClass.name}.`;
-        log += `${this.methodName}(${args.join(', ')}) => `;
+        let log = `${req.url} :: ${controllerClass.name}.`;
+        log += `${methodName}(${args.join(', ')}) => `;
 
         if (typeof result === 'object') log += JSON.stringify(result);
         else log += result;
