@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "An example extension project for LoopBack Next",
   "main": "index.js",
+  "engines": {
+    "node": ">=6"
+  },
   "scripts": {
     "build": "lb-tsc",
     "build:watch": "lb-tsc --watch",
