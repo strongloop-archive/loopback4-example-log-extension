@@ -60,7 +60,7 @@ describe('LogActionProvider (unit)', () => {
     const context: Context = new Context();
     context.bind(CoreBindings.CONTROLLER_CLASS).to(TestClass);
     context.bind(CoreBindings.CONTROLLER_METHOD_NAME).to('test');
-    context.bind(EXAMPLE_LOG_BINDINGS.APP_LEVEL).to(LOG_LEVEL.WARN);
+    context.bind(EXAMPLE_LOG_BINDINGS.APP_LOG_LEVEL).to(LOG_LEVEL.WARN);
     context.bind(EXAMPLE_LOG_BINDINGS.TIMER).to(timer);
     context.bind(EXAMPLE_LOG_BINDINGS.LOG_ACTION).toProvider(LogActionProvider);
     logger = await context.get(EXAMPLE_LOG_BINDINGS.LOG_ACTION);

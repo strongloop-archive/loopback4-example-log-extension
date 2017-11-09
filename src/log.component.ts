@@ -11,6 +11,6 @@ export class LogComponent implements Component {
   providers?: ProviderMap = {
     [EXAMPLE_LOG_BINDINGS.TIMER]: TimerProvider,
     [EXAMPLE_LOG_BINDINGS.LOG_ACTION]: LogActionProvider,
-    [EXAMPLE_LOG_BINDINGS.APP_LEVEL]: LogLevelProvider,
+    [EXAMPLE_LOG_BINDINGS.APP_LOG_LEVEL]: LogLevelProvider,
   };
 }

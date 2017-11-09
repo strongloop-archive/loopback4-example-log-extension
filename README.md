@@ -3,15 +3,15 @@ An example repo showing how to write a complex log extension
 
 ## Overview
 
-This repository shows you how to use [loopback4-extension-starter]() to write a complex logging extension that requires a [Component](), [Decorator](), and a [Mixin]().
+This repository shows you how to use [loopback4-extension-starter](https://github.com/strongloop/loopback4-extension-starter) to write a complex logging extension that requires a [Component](http://loopback.io/doc/en/lb4/Using-components.html), [Decorator](http://loopback.io/doc/en/lb4/Decorators.html), and a [Mixin](http://loopback.io/doc/en/lb4/Mixin.html).
 
-To use the extension, the user would load the component to get access to a `LogFn` that can be used in a sequence to log information. A Mixin allows the user to set the application wide logLevel. Only Controller methods configured at or above the logLevel will be logged. 
+To use the extension, load the component to get access to a `LogFn` that can be used in a sequence to log information. A Mixin allows you to set the application wide logLevel. Only Controller methods configured at or above the logLevel will be logged. 
 
 Possible levels are: DEBUG < INFO < WARN < ERROR < OFF
 
 *Possible levels are represented as numbers but users can use `LOG_LEVEL.${level}` to specify the value instead of using numbers.*
 
-A decorator is provided to allow a user to provide metadata for Controller methods by using it to set the minimum logLevel the method should be logged at.
+A decorator enables you to provide metadata for Controller methods to set the minimum logLevel.
 
 ### Example Usage
 ```ts
@@ -45,22 +45,33 @@ class MyController {
 
 ## Tutorial
 
-We'll start by cloning [loopback4-extension-starter]() and updating files headers to be `loopback4-example-log-extension` and `package.json`.
+Start by cloning [loopback4-extension-starter]() and updating files headers to be `loopback4-example-log-extension` and `package.json`.
 
-We'll be keeping all the top level files but modify the `src` directory and `test` directory as follows.
+Keep all the top level files but modify the `src` directory and `test` directory as follows.
 
 ### `/src/index.ts`
 
-We'll update the exports accordingly here.
+Update the exports accordingly here. Typically all files in `/src` are exported. Final version of file should be as follows:
+
+```ts
+export * from './decorators/log.decorator';
+export * from './mixins/log-level.mixin';
+export * from './providers/log-action.provider';
+export * from './providers/log-level.provider';
+export * from './providers/timer.provider';
+export * from './log.component';
+export * from './types';
+export * from './keys';
+```
 
 ### `/src/keys.ts`
 
-We'll start by defining new `Binding` values as well as exporting an `enum` for user's to use for setting logLevel. The file will look as follows: 
+Define new `Binding` values as well as exporting an `enum` for users to use for setting logLevel. The file will look as follows: 
 
 ```ts
 export namespace EXAMPLE_LOG_BINDINGS {
   export const METADATA = 'example.log.metadata';
-  export const APP_LEVEL = 'example.log.level';
+  export const APP_LOG_LEVEL = 'example.log.level';
   export const TIMER = 'example.log.timer';
   export const LOG_ACTION = 'example.log.action';
 }
@@ -76,7 +87,7 @@ export enum LOG_LEVEL {
 
 ### `/src/log.component.ts`
 
-We'll be keeping this file the same but updating the `Bindings` according to the values we declared in `/src/keys.ts`. This is where we export our providers so they can be automatically be bound to the appropriate keys. The final version of this file will look as follows:
+Keep this file the same but updating the `Bindings` according to the values we declared in `/src/keys.ts`. This is where providers are exported so they can automatically bind to the appropriate keys. The final version of this file will look as follows:
 
 ```ts
 import {EXAMPLE_LOG_BINDINGS} from './keys';
@@ -87,18 +98,37 @@ export class LogComponent implements Component {
   providers?: ProviderMap = {
     [EXAMPLE_LOG_BINDINGS.TIMER]: TimerProvider,
     [EXAMPLE_LOG_BINDINGS.LOG_ACTION]: LogActionProvider,
-    [EXAMPLE_LOG_BINDINGS.APP_LEVEL]: LogLevelProvider,
+    [EXAMPLE_LOG_BINDINGS.APP_LOG_LEVEL]: LogLevelProvider,
   };
 }
 ```
 
 ### `/src/types.ts`
 
-We'll be updating 
+Update the types slightly as shown below to make them more robust.
+
+```ts
+import {ParsedRequest, OperationArgs} from '@loopback/rest';
+
+export interface LogFn {
+  (
+    req: ParsedRequest,
+    args: OperationArgs,
+    // tslint:disable-next-line:no-any
+    result: any,
+    startTime?: [number, number],
+  ): Promise<void>;
+
+  startTimer(): [number, number];
+}
+
+export type Time = number | [number, number];
+export type TimerFn = (start?: [number, number]) => Time;
+```
 
 ### Decorator
 
-We'll start by writing our decorator. It must set the metadata for a decorator controller method to the numeric value given (or set a default). The decorator file is also where we'll create a method to allow us to retrieve the metadata. We'll be using `Reflector` from `@loopback/context` to store and retrieve metadata for controller methods. The implementation will be as follows:
+Lets start by writing a decorator. It must set the metadata for a controller method to the numeric value given (or use a default). A method will also be implemented to retreieve the metadata set by the decorator.`Reflector` from `@loopback/context` will be used to store and retrieve metadata for controller methods. The implementation will be as follows:
 
 ```ts
 // /src/decprators/log.decorator.ts
@@ -137,7 +167,7 @@ export function getLogMetadata(
 ```
 
 ### Mixin
-A user can set their app wide log level (the level at which decorated method will be logged) by binding the level value to `example.log.level`. To make it easier for the user to set the level, we'll be creating a mixin that will allow the user to configure the level in an easier manner. The mixin will allow the user to provide the setting via constructor or using the `app.logLevel(level:number)`. The implementation will look as follows:
+The user can set their app wide log level (the level at which decorated method will be logged) by binding the level value to `example.log.level`. To make it easier to set the level, we'll create a mixin that will allow the user to configure the level in an easier manner. The mixin will allow the user to provide the setting via constructor or using the `app.logLevel(level:number)`. The implementation will look as follows:
 
 ```ts
 // /src/mixins/log-level.mixin.ts
@@ -157,14 +187,14 @@ export function LogLevelMixin<T extends Constructor<any>>(superClass: T) {
     }
 
     logLevel(level: number) {
-      this.bind(EXAMPLE_LOG_BINDINGS.APP_LEVEL).to(level);
+      this.bind(EXAMPLE_LOG_BINDINGS.APP_LOG_LEVEL).to(level);
     }
   };
 }
 ```
 
 ### Providers
-A Provider is a class that returns a `value()` function that can be invoked by LoopBack 4. Since we're writing a log extension, we'll keep the `log.provider.ts` that we got from `loopback4-extension-starter` but modify it to be more complex. We'll also be keeping the `timer.provider.ts` as is. But first let's write the simplest possible provider that sets the default `example.log.level` value (if a user doesn't set one). It will look as follows:
+A Provider is a class that returns a `value()` function that can be invoked by LoopBack 4.Keep the `log.provider.ts` from `loopback4-extension-starter` but modify it to be more complex. Keep the `timer.provider.ts` as is. But first write the simplest possible provider that sets the default `example.log.level` value (if a user doesn't set one). It will look as follows:
 
 ```ts
 // /src/providers/log-level.provider.ts
@@ -180,7 +210,7 @@ export class LogLevelProvider implements Provider<number> {
 }
 ```
 
-As we won't be making changes to `timer.provider.ts`, we can now shift our focus to `log-action.provider.ts`. We'll update it to retrieve the metadata for the request context (based on the current controller and method). This will require us to inject the current controller and method from the current request context. Since bindings are usually resolved at run time and every request has a unique context, we must use `@inject.getter` which returns a function that can resolve binding dynamically. We can then call this function to get the binding values from the request context instead of the binding being resolved at run time (technically it's still resolved at run time but we just get a function to call and not the actual value). 
+Update `log-action.provider.ts` to retrieve the metadata for the request stored by the decorator (based on the current controller and method). Inject the current controller and method from the current request context so metadata can be retrieved. Since bindings are usually resolved at run time and every request has a unique context, use `@inject.getter` which returns a function that can resolve bindings dynamically. Call this function to get the binding values from the request context instead of the binding being resolved at run time (technically it's still resolved at run time but we just get a function to call and not the actual value). 
 
 The updated `log-action.provider.ts` will look as follows:
 ```ts
@@ -197,7 +227,7 @@ export class LogActionProvider implements Provider<LogFn> {
     private readonly getController: Getter<Constructor<{}>>,
     @inject.getter(CoreBindings.CONTROLLER_METHOD_NAME)
     private readonly getMethod: Getter<string>,
-    @inject(EXAMPLE_LOG_BINDINGS.APP_LEVEL) private readonly logLevel: number,
+    @inject(EXAMPLE_LOG_BINDINGS.APP_LOG_LEVEL) private readonly logLevel: number,
     @inject(EXAMPLE_LOG_BINDINGS.TIMER) public timer: TimerFn,
   ) {}
 
@@ -259,7 +289,7 @@ export class LogActionProvider implements Provider<LogFn> {
 
 ## Final Steps
 
-We make sure all our exports are correct in `index.ts` and we're done writing our Log Extension. Lastly we want to write some tests to make sure the behavior we've implemented is correct and modifications in the future don't break the expected behaviour (unless it's intentional in which case test cases should be updates as well). You can have a look at the test folder to see the variety of tests we wrote. There are unit tests to test functionality of individual functions as well as an extension acceptance test which tests the entire extension as a whole (everything working together). 
+Make sure all exports are correct in `index.ts` and you are done writing the Log Extension. Lastly, best practice is to write some tests to make sure the behavior implemented is correct and modifications in the future don't break the expected behaviour (unless it's intentional in which case test cases should be updates as well). You can have a look at the test folder to see the variety of tests written. There are unit tests to test functionality of individual functions as well as an extension acceptance test which tests the entire extension as a whole (everything working together). 
 
 ## License
 

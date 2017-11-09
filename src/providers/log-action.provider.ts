@@ -16,7 +16,8 @@ export class LogActionProvider implements Provider<LogFn> {
     private readonly getController: Getter<Constructor<{}>>,
     @inject.getter(CoreBindings.CONTROLLER_METHOD_NAME)
     private readonly getMethod: Getter<string>,
-    @inject(EXAMPLE_LOG_BINDINGS.APP_LEVEL) private readonly logLevel: number,
+    @inject(EXAMPLE_LOG_BINDINGS.APP_LOG_LEVEL)
+    private readonly logLevel: number,
     @inject(EXAMPLE_LOG_BINDINGS.TIMER) public timer: TimerFn,
   ) {}
 
