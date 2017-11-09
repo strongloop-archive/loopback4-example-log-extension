@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/strongloop/loopback4-example-log-extension#readme",
   "devDependencies": {
-    "@loopback/build": "^4.0.0-alpha.3"
+    "@loopback/build": "^4.0.0-alpha.3",
+    "@loopback/testlab": "^4.0.0-alpha.13"
   }
 }
