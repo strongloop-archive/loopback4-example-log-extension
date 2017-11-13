@@ -212,7 +212,6 @@ describe('log extension acceptance test', () => {
         let args: any = [];
         // tslint:disable-next-line:no-any
         let result: any;
-        // const start = this.logger.startTimer();
 
         try {
           const route = this.findRoute(req);

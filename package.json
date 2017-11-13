@@ -4,7 +4,7 @@
   "description": "An example extension project for LoopBack Next",
   "main": "index.js",
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "scripts": {
     "build": "lb-tsc",
