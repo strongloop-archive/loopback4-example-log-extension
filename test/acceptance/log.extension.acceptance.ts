@@ -168,7 +168,7 @@ describe('log extension acceptance test', () => {
     sinon.assert.calledWith(spy, errorMatch);
   });
 
-  it('logs no informtaion when logLevel is set to OFF', async () => {
+  it('logs no information when logLevel is set to OFF', async () => {
     setAppLogToOff();
     const client: Client = createClientForHandler(server.handleHttp);
 

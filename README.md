@@ -3,20 +3,32 @@ An example repo showing how to write a complex log extension
 
 ## Overview
 
-This repository shows you how to use [loopback4-extension-starter](https://github.com/strongloop/loopback4-extension-starter) to write a complex logging extension that requires a [Component](http://loopback.io/doc/en/lb4/Using-components.html), [Decorator](http://loopback.io/doc/en/lb4/Decorators.html), and a [Mixin](http://loopback.io/doc/en/lb4/Mixin.html).
+This repository shows you how to use [loopback4-extension-starter](https://github.com/strongloop/loopback4-extension-starter)
+to write a complex logging extension that requires a [Component](http://loopback.io/doc/en/lb4/Using-components.html),
+[Decorator](http://loopback.io/doc/en/lb4/Decorators.html), and a [Mixin](http://loopback.io/doc/en/lb4/Mixin.html).
 
-To use the extension, load the component to get access to a `LogFn` that can be used in a sequence to log information. A Mixin allows you to set the application wide logLevel. Only Controller methods configured at or above the logLevel will be logged. 
+To use the extension, load the component to get access to a `LogFn` that can be
+used in a sequence to log information. A Mixin allows you to set the
+application wide logLevel. Only Controller methods configured at or above the
+logLevel will be logged.
 
 Possible levels are: DEBUG < INFO < WARN < ERROR < OFF
 
-*Possible levels are represented as numbers but users can use `LOG_LEVEL.${level}` to specify the value instead of using numbers.*
+*Possible levels are represented as numbers but users can use `LOG_LEVEL.${level}`
+to specify the value instead of using numbers.*
 
-A decorator enables you to provide metadata for Controller methods to set the minimum logLevel.
+A decorator enables you to provide metadata for Controller methods to set the
+minimum logLevel.
 
 ### Example Usage
 
 ```ts
-import {LogLevelMixin, LogComponent, LOG_LEVEL, log} from 'loopback4-example-log-extension';
+import {
+  LogLevelMixin,
+  LogComponent,
+  LOG_LEVEL,
+  log
+} from 'loopback4-example-log-extension';
 // Other imports ... 
 
 class LogApp extends LogLevelMixin(Application) {
@@ -46,13 +58,14 @@ class MyController {
 
 ## Tutorial
 
-Start by cloning [loopback4-extension-starter](https://github.com/strongloop/loopback4-extension-starter) and updating files headers to be `loopback4-example-log-extension` and `package.json`.
+Start by cloning [loopback4-extension-starter](https://github.com/strongloop/loopback4-extension-starter)
+and updating files headers to be `loopback4-example-log-extension` and `package.json`.
 
 Keep all the top level files but modify the `src` directory and `test` directory as follows.
 
 ### `/src/index.ts`
 
-Update the exports accordingly here. Typically all files in `/src` are exported. Final version of file should be as follows:
+Update the exports accordingly here. Typically all files in `/src` are exported.
 
 ```ts
 export * from './decorators/log.decorator';
@@ -67,7 +80,8 @@ export * from './keys';
 
 ### `/src/keys.ts`
 
-Next, define new `Binding` keys and `enum` constants for users to use for setting logLevel.
+Next, define new `Binding` keys and `enum` constants for users to use for
+setting logLevel.
 
 ```ts
 export namespace EXAMPLE_LOG_BINDINGS {
@@ -88,7 +102,9 @@ export enum LOG_LEVEL {
 
 ### `/src/log.component.ts`
 
-Keep this file the same but updating the `Bindings` according to the values we declared in `/src/keys.ts`. This is where providers are exported so they can automatically bind to the appropriate keys.
+Keep this file the same but updating the `Bindings` according to the values we
+declared in `/src/keys.ts`. This is where providers are exported so they can
+automatically bind to the appropriate keys.
 
 ```ts
 import {EXAMPLE_LOG_BINDINGS} from './keys';
@@ -128,7 +144,11 @@ export type TimerFn = (start?: [number, number]) => Time;
 
 ### Decorator
 
-Lets start by writing a decorator. It must set the metadata for a controller method to the numeric value given (or use a default). A method will also be implemented to retreieve the metadata set by the decorator. `Reflector` from `@loopback/context` will be used to store and retrieve metadata for controller methods.
+Lets start by writing a decorator. It must set the metadata for a controller
+method to the numeric value given (or use a default). A method will also be
+implemented to retreieve the metadata set by the decorator. `Reflector` from
+`@loopback/context` will be used to store and retrieve metadata for controller
+methods.
 
 ```ts
 // /src/decorators/log.decorator.ts
@@ -168,7 +188,10 @@ export function getLogMetadata(
 
 ### Mixin
 
-The user can set their app wide log level (the level at which decorated method will be logged) by binding the level value to `example.log.level`. A Mixin can make it easier to set the level for users by providing it via `ApplicationOptions` or using a helper method `app.logLevel(level: number)`.
+The user can set their app wide log level (the level at which decorated method
+will be logged) by binding the level value to `example.log.level`. A Mixin can
+make it easier to set the level for users by providing it via `ApplicationOptions`
+or using a helper method `app.logLevel(level: number)`.
 
 ```ts
 // /src/mixins/log-level.mixin.ts
@@ -195,9 +218,13 @@ export function LogLevelMixin<T extends Constructor<any>>(superClass: T) {
 
 ### Providers
 
-A Provider is a class that returns a `value()` function that can be invoked by LoopBack 4. Keep the `log.provider.ts` from `loopback4-extension-starter` but it'll be modified to be more complex. Keep the `timer.provider.ts` as is. 
+A Provider is a class that returns a `value()` function that can be invoked by
+LoopBack 4. Keep the `log.provider.ts` from `loopback4-extension-starter` but
+it'll be modified to be more complex. Keep the `timer.provider.ts` as is. 
 
-User's shouldn't have to set a value for `example.log.level` to use this extension. An provider function can set the default value that a user can override.
+User's shouldn't have to set a value for `example.log.level` to use this
+extension. An provider function can set the default value that a user can
+override.
 
 ```ts
 // /src/providers/log-level.provider.ts
@@ -213,10 +240,17 @@ export class LogLevelProvider implements Provider<number> {
 }
 ```
 
-Now write the complex `log-action.provider.ts` by making the following changes in the file:
-- Update `log-action.provider.ts` to retrieve the metadata for the request stored by the decorator (based on the current controller and method). 
-- Inject the current controller and method from the current request context so metadata can be retrieved. *Since bindings are usually resolved at run time and every request has a unique context, use `@inject.getter` which returns a function that can resolve bindings dynamically.*
-- Call this function to get the binding values from the request context instead of the binding being resolved at run time (technically it's still resolved at run time but we just get a function to call and not the actual value). 
+Now write the complex `log-action.provider.ts` by making the following changes
+in the file:
+- Update `log-action.provider.ts` to retrieve the metadata for the request
+stored by the decorator (based on the current controller and method). 
+- Inject the current controller and method from the current request context so
+metadata can be retrieved. *Since bindings are usually resolved at run time and
+every request has a unique context, use `@inject.getter` which returns a
+function that can resolve bindings dynamically.*
+- Call this function to get the binding values from the request context instead
+of the binding being resolved at run time (technically it's still resolved at
+run time but we just get a function to call and not the actual value).
 
 The updated `log-action.provider.ts` will look as follows:
 ```ts
@@ -294,13 +328,19 @@ export class LogActionProvider implements Provider<LogFn> {
 
 ## Final Steps
 
-Make sure all exports are correct in `index.ts` and you are done writing the Log Extension. 
+Make sure all exports are correct in `index.ts` and you are done writing the
+Log Extension. 
 
 ### Testing
 
-Tests should be written to ensure the behaviour implemented is correct and future modifications don't break this expected behavior *(unless it's intentional in which case the tests should be updated as well)*. 
+Tests should be written to ensure the behaviour implemented is correct and
+future modifications don't break this expected behavior *(unless it's
+intentional in which case the tests should be updated as well)*. 
 
-Take a look at the test folder to see the variety of tests written for this extension. There are unit tests to test functionality of individual functions as well as an extension acceptance test which tests the entire extension as a whole (everything working together). 
+Take a look at the test folder to see the variety of tests written for this
+extension. There are unit tests to test functionality of individual functions
+as well as an extension acceptance test which tests the entire extension as a
+whole (everything working together). 
 
 ## License
 
