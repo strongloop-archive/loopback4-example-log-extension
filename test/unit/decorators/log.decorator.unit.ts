@@ -4,7 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {expect} from '@loopback/testlab';
-import {log, getLogMetadata, LOG_LEVEL} from '../../..';
+import {log, getLogMetadata, LOG_LEVEL, LevelMetadata} from '../../..';
 
 describe('@log() decorator (unit)', () => {
   it('sets log level for method to given value', () => {
@@ -13,8 +13,8 @@ describe('@log() decorator (unit)', () => {
       test() {}
     }
 
-    const level: number = getLogMetadata(TestClass, 'test');
-    expect(level).to.be.eql(LOG_LEVEL.ERROR);
+    const level: LevelMetadata = getLogMetadata(TestClass, 'test');
+    expect(level.level).to.be.eql(LOG_LEVEL.ERROR);
   });
 
   it('sets log level for method to default', () => {
@@ -23,7 +23,7 @@ describe('@log() decorator (unit)', () => {
       test() {}
     }
 
-    const level: number = getLogMetadata(TestClass, 'test');
-    expect(level).to.be.eql(LOG_LEVEL.WARN);
+    const level: LevelMetadata = getLogMetadata(TestClass, 'test');
+    expect(level.level).to.be.eql(LOG_LEVEL.WARN);
   });
 });

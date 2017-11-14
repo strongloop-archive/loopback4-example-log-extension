@@ -13,12 +13,16 @@ export interface LogFn {
     args: OperationArgs,
     // tslint:disable-next-line:no-any
     result: any,
-    startTime?: [number, number],
+    startTime?: HighResTime,
   ): Promise<void>;
 
-  startTimer(): [number, number];
+  startTimer(): HighResTime;
 }
 
-export type Time = number | [number, number];
+export type LevelMetadata = {level: number};
 
-export type TimerFn = (start?: [number, number]) => Time;
+export type HighResTime = [number, number]; // [seconds, nanoseconds]
+
+export type Time = number | HighResTime;
+
+export type TimerFn = (start?: HighResTime) => Time;

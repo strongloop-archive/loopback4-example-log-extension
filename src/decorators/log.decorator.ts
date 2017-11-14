@@ -5,6 +5,7 @@
 
 import {LOG_LEVEL, EXAMPLE_LOG_BINDINGS} from '../keys';
 import {Constructor, Reflector} from '@loopback/context';
+import {LevelMetadata} from '../types';
 
 /**
  * Mark a controller method as requiring logging (input, output & timing)
@@ -14,11 +15,11 @@ import {Constructor, Reflector} from '@loopback/context';
  * @param level The Log Level at or above it should log
  */
 export function log(level?: number) {
-  return function(target: Object, methodName: string) {
+  return function(target: Object, methodName: string): void {
     if (level === undefined) level = LOG_LEVEL.WARN;
     Reflector.defineMetadata(
       EXAMPLE_LOG_BINDINGS.METADATA,
-      level,
+      {level},
       target,
       methodName,
     );
@@ -34,7 +35,7 @@ export function log(level?: number) {
 export function getLogMetadata(
   controllerClass: Constructor<{}>,
   methodName: string,
-): number {
+): LevelMetadata {
   return Reflector.getMetadata(
     EXAMPLE_LOG_BINDINGS.METADATA,
     controllerClass.prototype,

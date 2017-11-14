@@ -8,7 +8,8 @@ import {CoreBindings} from '@loopback/core';
 import {OperationArgs, ParsedRequest} from '@loopback/rest';
 import {getLogMetadata} from '../decorators/log.decorator';
 import {EXAMPLE_LOG_BINDINGS, LOG_LEVEL} from '../keys';
-import {LogFn, Time, TimerFn} from '../types';
+import {LogFn, Time, TimerFn, HighResTime, LevelMetadata} from '../types';
+import chalk from 'chalk';
 
 export class LogActionProvider implements Provider<LogFn> {
   constructor(
@@ -27,13 +28,13 @@ export class LogActionProvider implements Provider<LogFn> {
       args: OperationArgs,
       // tslint:disable-next-line:no-any
       result: any,
-      start?: [number, number],
+      start?: HighResTime,
     ) => {
       return this.action(req, args, result, start);
     });
 
     fn.startTimer = () => {
-      return <[number, number]>this.timer();
+      return <HighResTime>this.timer();
     };
 
     return fn;
@@ -44,14 +45,16 @@ export class LogActionProvider implements Provider<LogFn> {
     args: OperationArgs,
     // tslint:disable-next-line:no-any
     result: any,
-    start?: [number, number],
-  ) {
+    start?: HighResTime,
+  ): Promise<void> {
     const controllerClass = await this.getController();
     const methodName: string = await this.getMethod();
 
-    const level: number = getLogMetadata(controllerClass, methodName);
+    const metadata: LevelMetadata = getLogMetadata(controllerClass, methodName);
+    const level: number | undefined = metadata ? metadata.level : undefined;
 
     if (
+      level !== undefined &&
       this.logLevel !== LOG_LEVEL.OFF &&
       level >= this.logLevel &&
       level !== LOG_LEVEL.OFF
@@ -70,16 +73,16 @@ export class LogActionProvider implements Provider<LogFn> {
 
       switch (level) {
         case LOG_LEVEL.DEBUG:
-          console.log(`\x1b[37m DEBUG: ${log} \x1b[0m`);
+          console.log(chalk.white(`DEBUG: ${log}`));
           break;
         case LOG_LEVEL.INFO:
-          console.log(`\x1b[32m INFO: ${log} \x1b[0m`);
+          console.log(chalk.green(`INFO: ${log}`));
           break;
         case LOG_LEVEL.WARN:
-          console.log(`\x1b[33m WARN: ${log} \x1b[0m`);
+          console.log(chalk.yellow(`WARN: ${log}`));
           break;
         case LOG_LEVEL.ERROR:
-          console.log(`\x1b[31m ERROR: ${log} \x1b[0m`);
+          console.log(chalk.red(`ERROR: ${log}`));
           break;
       }
     }

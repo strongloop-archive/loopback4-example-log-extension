@@ -27,6 +27,7 @@ import {
   EXAMPLE_LOG_BINDINGS,
   LogFn,
   Time,
+  HighResTime,
 } from '../..';
 import {
   sinon,
@@ -36,6 +37,7 @@ import {
   expect,
 } from '@loopback/testlab';
 import {Context, inject} from '@loopback/context';
+import chalk from 'chalk';
 
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -46,16 +48,21 @@ describe('log extension acceptance test', () => {
 
   class LogApp extends LogLevelMixin(Application) {}
 
-  const debugMatch: string =
-    '\x1b[37m DEBUG: /debug :: MyController.debug() => debug called \x1b[0m';
-  const infoMatch: string =
-    '\x1b[32m INFO: /info :: MyController.info() => info called \x1b[0m';
-  const warnMatch: string =
-    '\x1b[33m WARN: /warn :: MyController.warn() => warn called \x1b[0m';
-  const errorMatch: string =
-    '\x1b[31m ERROR: /error :: MyController.error() => error called \x1b[0m';
-  const nameMatch: string =
-    '\x1b[33m WARN: /?name=test :: MyController.hello(test) => hello test \x1b[0m';
+  const debugMatch: string = chalk.white(
+    'DEBUG: /debug :: MyController.debug() => debug called',
+  );
+  const infoMatch: string = chalk.green(
+    'INFO: /info :: MyController.info() => info called',
+  );
+  const warnMatch: string = chalk.yellow(
+    'WARN: /warn :: MyController.warn() => warn called',
+  );
+  const errorMatch: string = chalk.red(
+    'ERROR: /error :: MyController.error() => error called',
+  );
+  const nameMatch: string = chalk.yellow(
+    'WARN: /?name=test :: MyController.hello(test) => hello test',
+  );
 
   beforeEach(createApp);
   beforeEach(createController);
@@ -306,7 +313,7 @@ describe('log extension acceptance test', () => {
     app.controller(MyController);
   }
 
-  function timer(startTime?: [number, number]): Time {
+  function timer(startTime?: HighResTime): Time {
     if (!startTime) return [2, 2];
     return 100.02;
   }

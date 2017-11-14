@@ -4,13 +4,13 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {Provider} from '@loopback/context';
-import {TimerFn, Time} from '../types';
+import {TimerFn, Time, HighResTime} from '../types';
 
 export class TimerProvider implements Provider<TimerFn> {
   constructor() {}
 
   value(): TimerFn {
-    return (start?: [number, number]): Time => {
+    return (start?: HighResTime): Time => {
       if (!start) return process.hrtime();
       const diff = process.hrtime(start);
       return diff[0] * 1000 + Math.round(diff[1] * 1e-4) / 100;

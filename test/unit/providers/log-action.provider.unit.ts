@@ -15,6 +15,7 @@ import {
   LOG_LEVEL,
 } from '../../..';
 import {CoreBindings} from '@loopback/core';
+import chalk from 'chalk';
 
 describe('LogActionProvider (unit)', () => {
   let spy: sinon.SinonSpy;
@@ -27,16 +28,16 @@ describe('LogActionProvider (unit)', () => {
   afterEach(restoreConsoleSpy);
 
   it('logs a value without a start time', async () => {
-    const match =
-      '\x1b[31m ERROR: /test :: TestClass.test() => test message \x1b[0m';
+    const match = chalk.red('ERROR: /test :: TestClass.test() => test message');
 
     await logger(req, [], 'test message');
     sinon.assert.calledWith(spy, match);
   });
 
   it('logs a value with a start time', async () => {
-    const match =
-      '\x1b[31m ERROR: 100.02ms: /test :: TestClass.test() => test message \x1b[0m';
+    const match = chalk.red(
+      'ERROR: 100.02ms: /test :: TestClass.test() => test message',
+    );
     const startTime = logger.startTimer();
 
     await logger(req, [], 'test message', startTime);
@@ -44,8 +45,9 @@ describe('LogActionProvider (unit)', () => {
   });
 
   it('logs a value with args present', async () => {
-    const match =
-      '\x1b[31m ERROR: /test :: TestClass.test(test, message) => test message \x1b[0m';
+    const match = chalk.red(
+      'ERROR: /test :: TestClass.test(test, message) => test message',
+    );
 
     await logger(req, ['test', 'message'], 'test message');
     sinon.assert.calledWith(spy, match);
