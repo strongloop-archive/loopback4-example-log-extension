@@ -8,7 +8,7 @@ import {CoreBindings} from '@loopback/core';
 import {OperationArgs, ParsedRequest} from '@loopback/rest';
 import {getLogMetadata} from '../decorators/log.decorator';
 import {EXAMPLE_LOG_BINDINGS, LOG_LEVEL} from '../keys';
-import {LogFn, Time, TimerFn, HighResTime, LevelMetadata} from '../types';
+import {LogFn, TimerFn, HighResTime, LevelMetadata} from '../types';
 import chalk from 'chalk';
 
 export class LogActionProvider implements Provider<LogFn> {
@@ -34,7 +34,7 @@ export class LogActionProvider implements Provider<LogFn> {
     });
 
     fn.startTimer = () => {
-      return <HighResTime>this.timer();
+      return this.timer();
     };
 
     return fn;
@@ -67,7 +67,9 @@ export class LogActionProvider implements Provider<LogFn> {
       else log += result;
 
       if (start) {
-        const time = this.timer(start);
+        const timeDiff: HighResTime = this.timer(start);
+        const time: number =
+          timeDiff[0] * 1000 + Math.round(timeDiff[1] * 1e-4) / 100;
         log = `${time}ms: ${log}`;
       }
 

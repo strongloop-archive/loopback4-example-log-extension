@@ -23,6 +23,4 @@ export type LevelMetadata = {level: number};
 
 export type HighResTime = [number, number]; // [seconds, nanoseconds]
 
-export type Time = number | HighResTime;
-
-export type TimerFn = (start?: HighResTime) => Time;
+export type TimerFn = (start?: HighResTime) => HighResTime;

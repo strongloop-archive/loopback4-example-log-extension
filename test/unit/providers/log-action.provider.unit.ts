@@ -9,10 +9,10 @@ import {Context} from '@loopback/context';
 import {
   LogActionProvider,
   LogFn,
-  Time,
   log,
   EXAMPLE_LOG_BINDINGS,
   LOG_LEVEL,
+  HighResTime,
 } from '../../..';
 import {CoreBindings} from '@loopback/core';
 import chalk from 'chalk';
@@ -36,9 +36,9 @@ describe('LogActionProvider (unit)', () => {
 
   it('logs a value with a start time', async () => {
     const match = chalk.red(
-      'ERROR: 100.02ms: /test :: TestClass.test() => test message',
+      'ERROR: 100ms: /test :: TestClass.test() => test message',
     );
-    const startTime = logger.startTimer();
+    const startTime: HighResTime = logger.startTimer();
 
     await logger(req, [], 'test message', startTime);
     sinon.assert.calledWith(spy, match);
@@ -76,8 +76,8 @@ describe('LogActionProvider (unit)', () => {
     spy.restore();
   }
 
-  function timer(startTime?: [number, number]): Time {
-    if (!startTime) return [2, 2];
-    return 100.02;
+  function timer(startTime?: HighResTime): HighResTime {
+    if (!startTime) return [3, 3];
+    else return [0, 100000002];
   }
 });

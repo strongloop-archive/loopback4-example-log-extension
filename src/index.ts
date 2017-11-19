@@ -8,6 +8,6 @@ export * from './mixins/log-level.mixin';
 export * from './providers/log-action.provider';
 export * from './providers/log-level.provider';
 export * from './providers/timer.provider';
-export * from './log.component';
+export * from './component';
 export * from './types';
 export * from './keys';

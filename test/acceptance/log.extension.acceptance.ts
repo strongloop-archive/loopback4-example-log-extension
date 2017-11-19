@@ -26,7 +26,6 @@ import {
   log,
   EXAMPLE_LOG_BINDINGS,
   LogFn,
-  Time,
   HighResTime,
 } from '../..';
 import {
@@ -313,9 +312,9 @@ describe('log extension acceptance test', () => {
     app.controller(MyController);
   }
 
-  function timer(startTime?: HighResTime): Time {
-    if (!startTime) return [2, 2];
-    return 100.02;
+  function timer(startTime?: HighResTime): HighResTime {
+    if (!startTime) return [3, 3];
+    return [2, 2];
   }
 
   function createConsoleSpy() {

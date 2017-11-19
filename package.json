@@ -1,7 +1,7 @@
 {
   "name": "loopback4-example-log-extension",
   "version": "1.0.0",
-  "description": "An example extension project for LoopBack Next",
+  "description": "An example extension project for LoopBack 4",
   "main": "index.js",
   "engines": {
     "node": ">=8"
@@ -26,10 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/strongloop/loopback4-example-log-extension.git"
   },
-  "keywords": [
-    "loopback",
-    "loopback-extension"
-  ],
+  "keywords": ["loopback", "loopback-extension"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/strongloop/loopback4-example-log-extension/issues"
