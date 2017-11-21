@@ -10,7 +10,7 @@ import {TimerFn, HighResTime} from '../../..';
 describe('TimerProvider (unit)', () => {
   it('returns current time given no start time', () => {
     const timer: TimerFn = new TimerProvider().value();
-    const time: HighResTime = <[number, number]>timer();
+    const time: HighResTime = timer();
     expect(time).to.have.lengthOf(2);
     expect(time[0]).to.be.a.Number();
     expect(time[1]).to.be.a.Number();
