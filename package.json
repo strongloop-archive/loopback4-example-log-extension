@@ -1,8 +1,11 @@
 {
   "name": "loopback4-example-log-extension",
   "version": "1.0.0",
-  "description": "An example extension project for LoopBack Next",
+  "description": "An example extension project for LoopBack 4",
   "main": "index.js",
+  "engines": {
+    "node": ">=8"
+  },
   "scripts": {
     "build": "lb-tsc",
     "build:watch": "lb-tsc --watch",
@@ -23,12 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/strongloop/loopback4-example-log-extension.git"
   },
-  "keywords": [
-    "loopback4",
-    "lb4ext",
-    "typescript",
-    "loopback-extension"
-  ],
+  "keywords": ["loopback", "loopback-extension"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/strongloop/loopback4-example-log-extension/issues"
@@ -36,6 +34,12 @@
   "homepage": "https://github.com/strongloop/loopback4-example-log-extension#readme",
   "devDependencies": {
     "@loopback/build": "^4.0.0-alpha.3",
-    "@loopback/testlab": "^4.0.0-alpha.13"
+    "@loopback/testlab": "^4.0.0-alpha.12"
+  },
+  "dependencies": {
+    "@loopback/context": "^4.0.0-alpha.17",
+    "@loopback/core": "^4.0.0-alpha.19",
+    "@loopback/rest": "^4.0.0-alpha.6",
+    "chalk": "^2.3.0"
   }
 }
